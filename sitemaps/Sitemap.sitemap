@@ -1,5 +1,5 @@
 sitemap Sitemap label="Sitemap" {
-    Frame label="ROS" {
-        Group item=ROS
+    Frame label="Static" {
+        Group item=Static
     }
 }
