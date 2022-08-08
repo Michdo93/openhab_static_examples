@@ -1,0 +1,59 @@
+import java.util.Base64
+import java.io.ByteArrayOutputStream
+import java.net.URL
+
+rule "Started"
+when
+    Time cron "0 0/1 * * * ?"   // every minute
+then
+    testColor.postUpdate(NULL)
+    testContact.postUpdate(NULL)
+    testDateTime.postUpdate(NULL)
+    testDimmer.postUpdate(NULL)
+    testNumber.postUpdate(NULL)
+    testPlayer.postUpdate(NULL)
+    testRollershutter.postUpdate(NULL)
+    testString.postUpdate(NULL)
+    testSwitch.postUpdate(NULL)
+    testLocation.postUpdate(NULL)
+    testImage.postUpdate(NULL)
+
+    testColor.postUpdate("100, 100, 100")
+    testContact.postUpdate(CLOSED)
+    testDateTime.postUpdate(now.toLocalDateTime().toString())
+    testDimmer.postUpdate(30)
+    testNumber.postUpdate(50)
+    testPlayer.postUpdate(PAUSE)
+    testRollershutter.postUpdate(0)
+    testString.postUpdate("Hello World")
+    testSwitch.postUpdate(OFF)
+
+    // 48.051437316054006, 8.207755911376244
+    // latitude: 48.0501442
+    // longitude: 8.2014192
+    // elevation: 857.0
+    testLocation.postUpdate(new PointType("48.051437316054006, 8.207755911376244, 857.0"))
+
+    var userImageDataBytes = newByteArrayOfSize(0)
+    var url = new URL("http://192.168.254.142:8080/static/webapps/Image.jpg")
+    var byteStreamOutput = new ByteArrayOutputStream()
+    var urlConnection = url.openConnection()
+    var userpass = "openhabian" + ":" + "openhabian";
+    var basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
+    urlConnection.setRequestProperty ("Authorization", basicAuth);
+    var inputStream = urlConnection.getInputStream()
+    var n = 0
+    var buffer = newByteArrayOfSize(1024)
+    do {
+        n = inputStream.read(buffer)
+        if (n > 0)  {
+            byteStreamOutput.write(buffer, 0, n)
+        }
+    } while (n > 0)
+    userImageDataBytes = byteStreamOutput.toByteArray()
+
+    var String encodedString = Base64.getMimeEncoder().encodeToString(userImageDataBytes).replaceAll("\\r\\n", "")
+    var ImageTMP = "data:image/jpg;base64," + encodedString
+
+    testImage.postUpdate(ImageTMP)	
+end
