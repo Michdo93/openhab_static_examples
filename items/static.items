@@ -1,0 +1,13 @@
+Group Static
+
+Color testColor (Static)
+Contact testContact "[%s]" (Static)
+DateTime testDateTime "[%1$tH:%1$tM]" (Static)
+Dimmer testDimmer (Static)
+Image testImage (Static)
+Location testLocation "HS Furtwangen" <house>  (Static)
+Number testNumber "[%.0f]" (Static)
+Player testPlayer (Static)
+Rollershutter testRollershutter (Static)
+String testString "[%s]" (Static)
+Switch testSwitch (Static)
