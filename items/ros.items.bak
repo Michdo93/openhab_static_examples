@@ -1,4 +1,0 @@
-Group ROS (All)
-String ROS_Status "ROS [%s]"
-Switch Light_GF_Corridor_Ceiling  "Ceiling"  (GF_Corridor, Lights, ROS)
-Switch Light_GF_Bathroom (GF_Bathroom, Lights, ROS)
