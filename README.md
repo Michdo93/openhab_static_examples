@@ -9,6 +9,10 @@ You have to go to your openhab folder and clone it in the current directoy by us
 
 ```
 cd /etc/openhab
-git clone https://github.com/Michdo93/openhab_static_examples .
-sudo chown -R openhab:openhab *
+git clone https://github.com/Michdo93/openhab_static_examples
+cd openhab_static_examples
+sudo cp -r * /etc/openhab
+cd ..
+sudo rm -r openhab_static_examples
+sudo chown -R openhab:openhab /etc/openhab
 ```
