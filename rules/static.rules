@@ -23,7 +23,7 @@ then
     testLocation.postUpdate(new PointType("48.051437316054006, 8.207755911376244, 857.0"))
 
     var userImageDataBytes = newByteArrayOfSize(0)
-    var url = new URL("http://192.168.254.142:8080/static/webapps/Image.jpg")   // please use the IP to your openHAB instance
+    var url = new URL("http://127.0.0.1:8080/static/webapps/Image.jpg")   // please use the IP to your openHAB instance
     var byteStreamOutput = new ByteArrayOutputStream()
     var urlConnection = url.openConnection()
     var userpass = "openhabian" + ":" + "openhabian";
