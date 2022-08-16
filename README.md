@@ -8,7 +8,6 @@ The static examples are in `items/static.items`. With the rule file `rules/stati
 You have to go to your openhab folder and clone it in the current directoy by using a dot at the end of your command:
 
 ```
-cd /etc/openhab
 git clone https://github.com/Michdo93/openhab_static_examples
 cd openhab_static_examples
 sudo cp -r * /etc/openhab
