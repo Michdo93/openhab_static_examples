@@ -52,7 +52,7 @@ oder
 String hello state="Hello World!" "[%s]"
 ```
 
-oder wie auch immer diese dann aussehen müsste, ist nicht möglich.
+oder wie auch immer diese dann aussehen müsste, ist nicht möglich!
 
 Im Übrigen erkennt man anhand von `{bindingconfig}` dann, ob ein Item gebunden ist oder nicht. In den `{}` müsste entweder auf ein `Binding` direkt oder auf ein `Channel` eines `Things` zugegriffen werden. Bei einem `ungebundenem Item` entfällt dies vollständig.
 
