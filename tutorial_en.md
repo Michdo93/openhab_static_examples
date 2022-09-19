@@ -276,7 +276,7 @@ testDimmer.postUpdate(30)
 
 ### Image
 
-Images are definitely a special case. I can`t just take any string and pass it. In `openHAB` an `Image Item` doesn`t work either by specifying the path to an image. One could perhaps assume that I can use an image by specifying only its path. In this case it might not matter if I specify an absolute and local path or if the path points to an online source. In `openHAB` an image is stored and used as an image. This has been implemented in such a way that many devices can also deliver images. You have to assume that a device sends an image and not that you just include any image without any context and use in `openHAB`. Similar to many other sensor values, this is useful data.
+Images are definitely a special case. I can`t just take any string and pass it. In `openHAB` an `Image Item` does not work either by specifying the path to an image. One could perhaps assume that I can use an image by specifying only its path. In this case it might not matter if I specify an absolute and local path or if the path points to an online source. In `openHAB` an image is stored and used as an image. This has been implemented in such a way that many devices can also deliver images. You have to assume that a device sends an image and not that you just include any image without any context and use in `openHAB`. Similar to many other sensor values, this is useful data.
 
 However, since we are not using such an image, such as a frame from a camera, the following script shows how to add an image from an online source:
 
