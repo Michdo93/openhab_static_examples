@@ -323,7 +323,7 @@ testLocation.postUpdate(new PointType("48.051437316054006, 8.207755911376244, 85
 
 ### Number
 
-For a `Number Item` it doesn`t matter in the end which number you assign. The important thing is that a `State` can contain e.g. a floating point number and in the `Sitemap` you still format to an integer! If one should access this `state`, one would have to consider this e.g. in a `rule` then:
+For a `Number Item` it does not matter in the end which number you assign. The important thing is that a `State` can contain e.g. a floating point number and in the `Sitemap` you still format to an integer! If one should access this `state`, one would have to consider this e.g. in a `rule` then:
 
 ```
 testNumber.postUpdate(50)
@@ -425,7 +425,7 @@ You can add each `item` individually to a `sitemap` and you can also subdivide i
 
 ### Entire sitemaps
 
-Since we wanted a simple example for each `item`, we don`t even have to experiment with many possibilities of the sitemap. It is enough for us to represent the whole thing by a `Group Item`:
+Since we wanted a simple example for each `item`, we do not even have to experiment with many possibilities of the sitemap. It is enough for us to represent the whole thing by a `Group Item`:
 
 ```
 sitemap Sitemap label="Sitemap" {
