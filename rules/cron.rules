@@ -2,7 +2,7 @@ import java.util.Base64
 import java.io.ByteArrayOutputStream
 import java.net.URL
 
-rule "Started"
+rule "Cron every minute"
 when
     Time cron "0 0/1 * * * ?"   // every minute
 then
