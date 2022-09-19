@@ -376,7 +376,7 @@ rule "Started
 when
     System started
 then
-    testColor.postUpdate("100, 100, 100")
+    testColor.postUpdate("120, 100, 100")
     testContact.postUpdate(CLOSED)
     testDateTime.postUpdate(now.toLocalDateTime().toString())
     testDimmer.postUpdate(30)
@@ -464,7 +464,7 @@ then
     testLocation.postUpdate(NULL)
     testImage.postUpdate(NULL)
 
-    testColor.postUpdate("100, 100, 100")
+    testColor.postUpdate("120, 100, 100")
     testContact.postUpdate(CLOSED)
     testDateTime.postUpdate(now.toLocalDateTime().toString())
     testDimmer.postUpdate(30)
