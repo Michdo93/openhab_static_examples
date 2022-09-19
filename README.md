@@ -15,3 +15,5 @@ cd ..
 sudo rm -r openhab_static_examples
 sudo chown -R openhab:openhab /etc/openhab
 ```
+
+![Sitemap](https://raw.githubusercontent.com/Michdo93/openhab_static_examples/master/sitemap.png)
