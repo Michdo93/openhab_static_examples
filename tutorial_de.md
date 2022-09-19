@@ -26,13 +26,15 @@ public class HelloWorld
 }
 ```
 
-Ich habe in diesem Hello World Beispiel die Ausgabe des Strings `"Hello World!"` leicht angepasst, sodass dieser String vorher in einer Variablen gespeichert wird. Denn genau dass ist, was in openHAB so nicht gemacht werden kann. Die Items werden fälschlicherweise oft als Variablen verstanden. Genauer genommen sind Items dann aber Objekte. Das wohl entscheidenste Attribut für die Wertzuweisung ist `state`. Wird ein Item-Objekt erzeugt, kann ich allerdings die Wertzuweisung für `state` nicht vornehmen. Andere Attribute wie `name`, `label` oder `icon` kann ich setzen. Oder auch ein Item einer Group zu ordnen, was wiederum ein anderes Item ist.
+Ich habe in diesem Hello World Beispiel die Ausgabe des Strings `"Hello World!"` leicht angepasst, sodass dieser String vorher in einer Variablen gespeichert wird. Denn genau dass ist, was in openHAB so nicht gemacht werden kann. Die `Items` werden fälschlicherweise oft als Variablen verstanden. Genauer genommen sind `Items` aber Objekte. Das wohl entscheidenste Attribut für die Wertzuweisung ist `state`. Wird ein `Item`-Objekt erzeugt, kann ich allerdings die Wertzuweisung für `state` nicht vornehmen. Andere Attribute wie `name`, `label` oder `icon` kann ich setzen. Oder auch ein `Item` einer `Group` zu ordnen, was wiederum ein anderes `Item` ist.
 
 Was heißt dies konkret? Es gilt die folgende [Syntax](https://www.openhab.org/docs/configuration/items.html#item-definition-and-syntax) für die Item-Definition:
 
 ```
 itemtype itemname "labeltext [stateformat]" <iconname> (group1, group2, ...) ["tag1", "tag2", ...] {bindingconfig}
 ```
+
+Der `state` von einem `Item` wird nicht bei der `Itemdefinition` bzw. der Instanziierung des `Item`-Objekts gesetzt! Typischerweise verändert ein `Thing` oder eine `Rule` diesen.
 
 Wenn ich mein Beispiel von oben aus dem Java-Programm nehmen würde, dann kann ich maximal ein
 
@@ -221,27 +223,145 @@ Switch testSwitch (Static)
 
 ## Wertzuweisung von States
 
+Da wir hier von einem statischen Beispiel ausgehen, also dass die Werte sich nicht verändern, kann man beim Start von `openHAB` diese `Rule` ausführen. Die `<TRIGGER_CONDITION>` `System started` ist ein sogenannter [systembasierter Trigger](https://www.openhab.org/docs/configuration/rules-dsl.html#system-based-triggers).
+
+```
+rule "Started"
+when
+    System started
+then
+    ...
+end
+```
+
+Konkret bedeutet dies, dass sobald `openHAB` gestartet ist, die `Items` ihre Werte erhalten sollen.
+
 ### Color
+
+Für ein `Color Item` wird für den `State` Werte im `HSB`-Format erwartet:
+
+```
+testColor.postUpdate("120, 100, 100") // hue, saturation, brightness
+```
+
+Dies würde in `RGB` `"0, 255, 0"` entsprechen!
 
 ### Contact
 
+Bei einem `Contact Item`gehen wir einfach mal davon aus, dass zu Systemstart der `State` `CLOSED` ist:
+
+```
+testContact.postUpdate(CLOSED)
+```
+
+Wie wir sehen können wir in der `Rule` den `State` `CLOSED` direkt verwenden und nicht fälschlicherweise als String `"CLOSED"`. Dies sollten wir uns für alle Zustandsrepräsentationen merken! Ein `sendCommand` wäre bei einem `Contact Item` nicht möglich!
+
 ### DateTime
+
+In den meisten Programmiersprachen gibt es die Möglichkeit ein Datums-Objekt zu erstellen, in dem ein String zu einem Zeitstempel gewandelt wird (häufig `string to time` genannt). In `openHAB` machen wir letztlich nichts anderes:
+
+```
+testDateTime.postUpdate(now.toLocalDateTime().toString())
+```
+
+In diesem Fall haben wir jedoch aus einem Datumsobjekt, welches uns die aktuelle Zeit zurückliefert, unsere Eingabe genommen. Dies bedeutet, dass wir den zurückgelieferten Wert zu einem String wandeln müssen. hierfür verwenden wir `toString()`. Eine Funktion, die öfter mal in `Rules` hilfreich sein kann.
 
 ### Dimmer
 
+Bei einen `Dimmer` muss letztlich nur darauf geachtet werden, dass man eine Ganzzahl zwischen `0` und `100` verwendet:
+
+```
+testDimmer.postUpdate(30)
+```
+
 ### Image
+
+Bilder sind definitiv ein Sonderfall. Ich kann ja nicht einfach irgendein String nehmen und diesen übergeben. In `openHAB` funktioniert ein `Image Item` auch nicht über die Pfadangabe zu einem Bild. Man könnte ja vielleicht annehmen, dass ich ein Bild verwenden kann, indem ich nur dessen Pfad angebe. Hierbei wäre dann vielleicht egal, ob ich einen absoluten und lokalen Pfad angebe oder ob der Pfad auf eine Online-Quelle verweist. In `openHAB` wird ein Bild, als ein Bild gespeichert und verwendet. Dies ist dahingehend so umgesetzt worden, als dass eben viele Geräte auch irgendwelche Bilder ausliefern können. Man muss ja davon ausgehen, dass eben ein Gerät ein Bild sendet und nicht, dass man einfach nur irgendein Bild ohne jeglichen Kontext und Nutzen in `openHAB` einbindet. Ähnlich wie viele andere Sensorwerte, sind dies ja Nutzdaten.
+
+Da wir jedoch kein solches Bild verwenden, wie bspw. ein Frame einer Kamera, zeigt nachfolgendes Skript auf, wie aus einer Online-Quelle ein Bild hinzugefügt werden kann:
+
+```
+var userImageDataBytes = newByteArrayOfSize(0)
+var url = new URL("http://127.0.0.1:8080/static/webapps/Image.jpg")   // please use the IP to your openHAB instance
+var byteStreamOutput = new ByteArrayOutputStream()
+var urlConnection = url.openConnection()
+var userpass = "openhabian" + ":" + "openhabian";
+var basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
+urlConnection.setRequestProperty ("Authorization", basicAuth);
+var inputStream = urlConnection.getInputStream()
+var n = 0
+var buffer = newByteArrayOfSize(1024)
+do {
+    n = inputStream.read(buffer)
+    if (n > 0)  {
+        byteStreamOutput.write(buffer, 0, n)
+    }
+} while (n > 0)
+userImageDataBytes = byteStreamOutput.toByteArray()
+
+var String encodedString = Base64.getMimeEncoder().encodeToString(userImageDataBytes).replaceAll("\\r\\n", "")
+var ImageTMP = "data:image/jpg;base64," + encodedString
+
+testImage.postUpdate(ImageTMP)	
+```
+
+In diesem Beispiel nutzen wir das HTML-Verzeichnis (`/etc/openhab/html`) von `openHAB`. Um das ganze ein bisschen zu erweitern, habe ich das Unterverzeichnis `webapps` erstellt und darin ein `Image.jpg` abgelegt. Möchte ich also von meinem Server, auf dem `openHAB` läuft ein lokales Bild hinzufügen, würde ich lieber empfehlen, dass man einen symbolischen Link in das HTML-Verzeichnis verknüpft und wie oben verfährt. Man kann ansonsten natürlich auch Bilder über Java-Funktionen einlessen. Diese Möglichkeit erlaubt es, dass man auch von anderen Rechnern im selben Netzwerk ein Bild hinzufügt.
+
+Wichtig ist, dass man mit `Streams` arbeitet und dass das Bild am Ende `Base64` encodiert als Zeichenkette als `State` geupdated wird! Auch ein `sendCommand` ist bei Bildern nicht möglich!
 
 ### Location
 
+Wie wir anhand vom Label schon mitbekommen haben, wollen wir für das `Location Item` die `GPS`-Koordinaten der Hochschule Furtwangen als `State` verwenden. Dies geschieht auch durch einen String. Diesen müssen wir jedoch an ein `PointType`-Objekt übergeben:
+
+```
+// 48.051437316054006, 8.207755911376244
+// latitude: 48.0501442
+// longitude: 8.2014192
+// altitude/elevation: 857.0
+testLocation.postUpdate(new PointType("48.051437316054006, 8.207755911376244, 857.0"))
+```
+
 ### Number
+
+Für ein `Number Item` ist es letztlich egal, welche Zahl man zuweist. Wichtig ist, dass ein `State` bspw. eine Fließkommazahl beinhalten kann und in der `Sitemap` man trotzdem nach einer Ganzzahl formatiert! Sollte man auf diesen `State` zugreifen, müsste man dies bspw. in einer `Rule` dann berücksichtigen:
+
+```
+testNumber.postUpdate(50)
+```
 
 ### Player
 
+Bei einem Player können wir `States` wie `PLAY`, `PAUSE`, `REWIND`, `FASTFORWARD`, `PREVIOUS` oder `NEXT` verwenden:
+
+```
+testPlayer.postUpdate(PAUSE)
+```
+
+Auch hier ist wieder zu sehen, dass man dies nicht als String angibt!
+
 ### Rollershutter
+
+Ebenfalls keine Strings verwenden `Rollershutter Items` bei ihren `Commands`. Beispielhaft wollen wir jedoch einen `State` setzen:
+
+```
+testRollershutter.postUpdate(0)
+```
 
 ### String
 
+Wie bereits erwähnt kann ein String klassisch eine Zeichenkette sein oder ein einzelnes Zeichen beinhaltet. Verarbeitet wird das ganze als String. Wie wir aus vielen Programmiersprachen (hier immer noch Java) wissen, ist eine Zeichenkette nichts anderes als ein `Array` aus `Zeichen` oder in anderen Worten ein `Array` aus `Char`'s:
+
+```
+testString.postUpdate("Hello World")
+```
+
 ### Switch
+
+Ein `Switch` kann entweder den `State` `ON` oder `OFF` besitzen:
+
+```
+testSwitch.postUpdate(OFF)
+```
 
 ### Gesamte Rules
 
