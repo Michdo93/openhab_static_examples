@@ -419,8 +419,6 @@ end
 
 ## Output
 
-## Output
-
 You can add each `item` individually to a `sitemap` and you can also subdivide it as you like. No matter if this is organized in `Frames` or also in `Groups`. You can also set a (new) `label` or `icon` for each `item`. Unlike with `Items`, different representations can be considered, such as `Chart` or `Webview`. More about this can be found in the `openHAB` documentation at [Sitemaps](https://www.openhab.org/docs/ui/sitemaps.html).
 
 ### Entire sitemaps
